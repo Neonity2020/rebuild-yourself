@@ -63,6 +63,14 @@ const allTags = Array.from(
 							{post.data.heroImage && (
 								<div class="post-img-wrapper">
 									<img src={post.data.heroImage.src} alt="" class="post-img" />
+									{post.data.video && (
+										<div class="video-card-badge">
+											<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="display:inline;vertical-align:middle;margin-right:2px;">
+												<path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+											</svg>
+											<span>播客 | Podcast</span>
+										</div>
+									)}
 								</div>
 							)}
 							<div class="post-content">
@@ -220,6 +228,27 @@ const allTags = Array.from(
 		height: 180px;
 		overflow: hidden;
 		border-bottom: 1px solid var(--border-color);
+		position: relative;
+	}
+
+	.video-card-badge {
+		position: absolute;
+		top: 0.75rem;
+		left: 0.75rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		background: rgba(var(--accent-primary-rgb), 0.85);
+		color: #ffffff;
+		padding: 0.25rem 0.625rem;
+		border-radius: 9999px;
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 0.7rem;
+		backdrop-filter: blur(4px);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		z-index: 2;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	}
 
 	.post-img {

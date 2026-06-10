@@ -9,7 +9,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	headings?: Array<{ depth: number; slug: string; text: string }>;
 };
 
-const { title, description, pubDate, updatedDate, heroImage, tags, headings = [] } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, headings = [], video, videoType = 'local' } = Astro.props;
 
 // Filter headings for the Table of Contents (show h2 and h3)
 const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
@@ -58,11 +58,44 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 					}
 				</header>
 
-				<!-- Hero Image -->
-				{heroImage && (
-					<div class="hero-image-wrapper glass">
-						<img src={heroImage.src} alt="" class="hero-image" />
+				<!-- Hero Image or Video Podcast -->
+				{video ? (
+					<div class="video-player-container glass">
+						<div class="video-badge">
+							<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:inline;vertical-align:middle;margin-right:4px;">
+								<path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+							</svg>
+							<span>视频播客 | Video Podcast</span>
+						</div>
+						{videoType === 'local' ? (
+							<video 
+								src={video} 
+								controls 
+								playsinline 
+								poster={heroImage ? heroImage.src : undefined}
+								class="video-element"
+							></video>
+						) : (
+							<div class="iframe-wrapper">
+								<iframe 
+									src={video} 
+									scrolling="no" 
+									border="0" 
+									frameborder="no" 
+									framespacing="0" 
+									allowfullscreen="true"
+									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+									class="video-iframe"
+								></iframe>
+							</div>
+						)}
 					</div>
+				) : (
+					heroImage && (
+						<div class="hero-image-wrapper glass">
+							<img src={heroImage.src} alt="" class="hero-image" />
+						</div>
+					)
 				)}
 
 				<!-- Post Body & Table of Contents Container -->
@@ -199,6 +232,65 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+	}
+
+	/* Video Player Container */
+	.video-player-container {
+		border-radius: 24px;
+		overflow: hidden;
+		margin-bottom: 3.5rem;
+		width: 100%;
+		position: relative;
+		border: 1px solid var(--border-color);
+		box-shadow: var(--card-shadow);
+		background: var(--glass-bg);
+	}
+
+	.video-badge {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		background: rgba(var(--accent-primary-rgb), 0.85);
+		color: #ffffff;
+		padding: 0.5rem 1rem;
+		border-radius: 9999px;
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 0.8rem;
+		z-index: 10;
+		backdrop-filter: blur(8px);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.video-element {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		display: block;
+		object-fit: contain;
+		background: #000;
+	}
+
+	.iframe-wrapper {
+		width: 100%;
+		position: relative;
+		padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+		height: 0;
+	}
+
+	.video-iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border: 0;
+		background: #000;
 	}
 
 	/* Layout Container */

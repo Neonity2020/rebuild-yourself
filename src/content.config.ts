@@ -15,6 +15,8 @@ const blog = defineCollection({
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.optional(image()),
 			tags: z.array(z.string()).optional(),
+			video: z.string().optional(),
+			videoType: z.enum(['local', 'youtube', 'bilibili']).optional(),
 		}),
 });
 

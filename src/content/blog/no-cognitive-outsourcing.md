@@ -4,6 +4,8 @@ description: "在大语言模型普及的时代，为什么保持自主思考与
 pubDate: 'Jun 17 2026'
 heroImage: '../../assets/mediocre-mean.jpg'
 tags: ['resilience']
+video: '/videos/no-cognitive-outsourcing.mp4'
+videoType: 'local'
 ---
 
 我们正在见证一场无声的“主权交接”。
