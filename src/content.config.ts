@@ -16,7 +16,7 @@ const blog = defineCollection({
 			heroImage: z.optional(image()),
 			tags: z.array(z.string()).optional(),
 			video: z.string().optional(),
-			videoType: z.enum(['local', 'youtube', 'bilibili']).optional(),
+			videoType: z.enum(['local', 'youtube', 'bilibili', 'google-drive']).optional(),
 		}),
 });
 
