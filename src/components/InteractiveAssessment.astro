@@ -1,0 +1,541 @@
+---
+---
+
+<div class="assessment-card glass" id="assessment-container">
+	<!-- Start View -->
+	<div class="view active" id="start-view">
+		<div class="badge">自我评测 | Assessment</div>
+		<h2 class="view-title">你准备好迎接 AI 时代了吗？</h2>
+		<p class="view-desc">花 1 分钟完成这篇自我诊断评测，获取你的 <strong>AI 时代复原力指数 (AI Era Resilience Index)</strong>，并获得量身定制的自我重塑行动建议。</p>
+		<button class="btn btn-primary" id="start-btn">开始评测</button>
+	</div>
+
+	<!-- Quiz View -->
+	<div class="view" id="quiz-view">
+		<div class="progress-container">
+			<div class="progress-bar" id="progress-bar"></div>
+		</div>
+		<div class="question-header">
+			<span class="question-number" id="question-number">第 1 题 / 共 4 题</span>
+		</div>
+		<h3 class="question-text" id="question-text">问题加载中...</h3>
+		
+		<div class="options-grid" id="options-container">
+			<!-- Options dynamically populated by JS -->
+		</div>
+	</div>
+
+	<!-- Results View -->
+	<div class="view" id="results-view">
+		<div class="badge">评测报告 | Report</div>
+		<h2 class="view-title">复原力画像 (Resilience Profile)</h2>
+		
+		<div class="result-score-section">
+			<div class="chart-container">
+				<svg class="radial-svg" viewBox="0 0 120 120">
+					<circle class="bg-circle" cx="60" cy="60" r="50"></circle>
+					<circle class="fg-circle" cx="60" cy="60" r="50" id="result-chart-circle"></circle>
+				</svg>
+				<div class="score-display">
+					<span class="score-val" id="score-val">0</span>
+					<span class="score-pct">%</span>
+				</div>
+			</div>
+			
+			<div class="profile-info">
+				<h3 class="profile-title" id="profile-title">AI Orchestrator</h3>
+				<p class="profile-desc" id="profile-desc">你具备极强的适应力，能够广泛利用 AI 工具增强自己的智能。</p>
+			</div>
+		</div>
+		
+		<div class="recommendations-box">
+			<h4>量身定制的重塑建议 (Recommendations)：</h4>
+			<ul id="recommendations-list">
+				<!-- Populated dynamically -->
+			</ul>
+		</div>
+
+		<div class="results-actions">
+			<button class="btn btn-secondary" id="restart-btn">重新测试</button>
+			<a href="/blog" class="btn btn-primary">阅读推荐文章</a>
+		</div>
+	</div>
+</div>
+
+<style is:global>
+	.assessment-card {
+		padding: 2.5rem;
+		border-radius: 24px;
+		margin: 3rem 0;
+		position: relative;
+		overflow: hidden;
+		min-height: 350px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.view {
+		display: none;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		animation: fadeIn 0.4s ease-out forwards;
+	}
+
+	.view.active {
+		display: flex;
+	}
+
+	.view-title {
+		margin-top: 1rem;
+		font-size: 2.25rem;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+	}
+
+	.view-desc {
+		font-size: 1.1rem;
+		max-width: 600px;
+		margin-bottom: 2rem;
+	}
+
+	/* Quiz CSS */
+	#quiz-view {
+		text-align: left;
+		align-items: stretch;
+	}
+
+	.progress-container {
+		width: 100%;
+		height: 6px;
+		background: var(--bg-tertiary);
+		border-radius: 9999px;
+		margin-bottom: 1.5rem;
+		overflow: hidden;
+	}
+
+	.progress-bar {
+		height: 100%;
+		width: 0%;
+		background: var(--accent-gradient);
+		border-radius: 9999px;
+		transition: width 0.3s ease;
+	}
+
+	.question-header {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--accent-cyan);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 0.5rem;
+	}
+
+	.question-text {
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin-bottom: 2rem;
+		line-height: 1.35;
+	}
+
+	.options-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.option-btn {
+		background: var(--bg-secondary);
+		border: 1px solid var(--border-color);
+		color: var(--text-primary);
+		padding: 1.25rem 1.5rem;
+		border-radius: 16px;
+		text-align: left;
+		cursor: pointer;
+		font-family: var(--font-sans);
+		font-size: 1.05rem;
+		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.option-btn:hover {
+		background: rgba(var(--accent-cyan-rgb), 0.04);
+		border-color: rgba(var(--accent-cyan-rgb), 0.4);
+		transform: translateX(4px);
+	}
+
+	.option-indicator {
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		border: 2px solid var(--border-color);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.8rem;
+		font-weight: 700;
+		flex-shrink: 0;
+		transition: all 0.2s ease;
+	}
+
+	.option-btn:hover .option-indicator {
+		border-color: var(--accent-cyan);
+		background: rgba(var(--accent-cyan-rgb), 0.1);
+	}
+
+	/* Results CSS */
+	.result-score-section {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 3rem;
+		margin: 2rem 0;
+		width: 100%;
+		max-width: 700px;
+	}
+
+	.chart-container {
+		position: relative;
+		width: 120px;
+		height: 120px;
+		flex-shrink: 0;
+	}
+
+	.radial-svg {
+		transform: rotate(-90deg);
+		width: 100%;
+		height: 100%;
+	}
+
+	.bg-circle, .fg-circle {
+		fill: none;
+		stroke-width: 10px;
+	}
+
+	.bg-circle {
+		stroke: var(--bg-tertiary);
+	}
+
+	.fg-circle {
+		stroke: var(--accent-cyan);
+		stroke-linecap: round;
+		stroke-dasharray: 314; /* 2 * PI * r (r=50) */
+		stroke-dashoffset: 314;
+		transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.score-display {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		display: flex;
+		align-items: baseline;
+		font-family: var(--font-display);
+	}
+
+	.score-val {
+		font-size: 2.25rem;
+		font-weight: 800;
+		color: var(--text-primary);
+	}
+
+	.score-pct {
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--text-secondary);
+	}
+
+	.profile-info {
+		text-align: left;
+		flex: 1;
+	}
+
+	.profile-title {
+		font-size: 1.75rem;
+		font-weight: 800;
+		margin-bottom: 0.5rem;
+		background: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.profile-desc {
+		font-size: 1.05rem;
+		color: var(--text-secondary);
+		margin-bottom: 0;
+	}
+
+	.recommendations-box {
+		width: 100%;
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid var(--border-color);
+		border-radius: 16px;
+		padding: 1.5rem;
+		margin-bottom: 2rem;
+		text-align: left;
+	}
+
+	.recommendations-box h4 {
+		font-size: 1.1rem;
+		margin-bottom: 0.75rem;
+		font-weight: 700;
+	}
+
+	.recommendations-box ul {
+		margin-left: 1.25rem;
+		color: var(--text-secondary);
+	}
+
+	.recommendations-box li {
+		margin-bottom: 0.5rem;
+	}
+
+	.results-actions {
+		display: flex;
+		gap: 1rem;
+	}
+
+	@media (max-width: 640px) {
+		.assessment-card {
+			padding: 1.5rem;
+		}
+		.result-score-section {
+			flex-direction: column;
+			gap: 1.5rem;
+			text-align: center;
+		}
+		.profile-info {
+			text-align: center;
+		}
+		.results-actions {
+			flex-direction: column;
+			width: 100%;
+			gap: 0.75rem;
+		}
+		.results-actions .btn {
+			width: 100%;
+		}
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>
+
+<script>
+	const questions = [
+		{
+			question: "你在工作或学习中集成生成式 AI 工具（如 ChatGPT、Claude 或 Copilot 等）的频率如何？",
+			options: [
+				{ text: "深度融入，每日使用——它们几乎增强了我所有的日常工作与学习项目。", score: 25 },
+				{ text: "偶尔使用——我只用它们来做头脑风暴或文章总结等特定任务。", score: 15 },
+				{ text: "极少或从不使用——我更倾向于传统的搜索引擎或纯手动工作流。", score: 5 }
+			]
+		},
+		{
+			question: "面对复杂问题时，你通常如何与 AI 协同工作？",
+			options: [
+				{ text: "作为思维伙伴——构建复杂的 Prompt 工作流，并批判性地评估其输出。", score: 25 },
+				{ text: "快速查询答案——直接复制粘贴结果，很少进行二次审阅或深度修改。", score: 10 },
+				{ text: "自主解决——尽量完全靠自己弄清楚，避免引入 AI 干扰思路。", score: 5 }
+			]
+		},
+		{
+			question: "在学习跨领域的全新技术/技能时，你的掌握速度如何？",
+			options: [
+				{ text: "极快——我利用 AI 快速建立学习路线图，解答疑难概念，并进行交互式探索。", score: 25 },
+				{ text: "中等——我通过观看在线视频课程、阅读官方文档，并手写一些测试代码。", score: 15 },
+				{ text: "较慢——我主要依赖传统培训或实体书籍，通常需要耗费数月时间才能上手。", score: 5 }
+			]
+		},
+		{
+			question: "对于 AI 自动化可能取代当前岗位的趋势，你的心态是怎样的？",
+			options: [
+				{ text: "视作机遇——这是摆脱机械化事务、升级个人策略与 Taste 的绝佳契机。", score: 25 },
+				{ text: "焦虑但积极——虽然有危机感，但我正在主动学习相关技术进行自我重塑。", score: 15 },
+				{ text: "焦虑且排斥——我认为这是一种威胁，尽量避免去接触和了解它。", score: 5 }
+			]
+		}
+	];
+
+	const profiles = [
+		{
+			minScore: 80,
+			title: "AI Orchestrator (AI 协同架构师)",
+			desc: "你处于 AI 适应度的第一梯队。你将 AI 视为认知放大器，在保持高度批判性思考的同时成倍提升效率。你已经具备了在 AI 时代蓬勃发展并发挥领导力的坐标。",
+			recommendations: [
+				"阅读文章：《Designing Systems of Intelligence: Beyond Simple Chat Bots》",
+				"专注于构建个人专属的工作流，并尝试编排自主运行的智能体（Agents）。",
+				"持续磨练你的深度品味 (Taste) 与直觉判断力——这是人类最后的价值壁垒。"
+			]
+		},
+		{
+			minScore: 50,
+			title: "Resilient Adapter (敏捷适应者)",
+			desc: "你正在积极地探索和适应。你利用 AI 提高了工作速度，但可能仍然处于较为被动的提问状态，或者缺乏系统性的工作流编排。优化你的 Prompt 架构将为你带来巨大的生产力红利。",
+			recommendations: [
+				"阅读文章：《Accelerating Your Learning Velocity with AI Coaches》",
+				"挑战自己：利用 AI 在几天内用一门你完全不懂的编程语言独立完成一个 Side Project。",
+				"建立日常惯例，主动测试和引入新的生产力工具。"
+			]
+		},
+		{
+			minScore: 0,
+			title: "Traditional Humanist (传统探索者)",
+			desc: "你目前仍在使用传统的方法开展工作。虽然你对人类核心价值的专注非常宝贵，但你也面临在执行速度和处理复杂任务能力上被拉开差距的风险。建议从在日常例程中融入微小的 AI 协同习惯开始。",
+			recommendations: [
+				"阅读文章：《A Beginner's Manifesto for Rebuilding Yourself in the AI Era》",
+				"从小事做起：每天花 10 分钟使用 AI 辅助润色邮件、翻译文档或提取长文摘要。",
+				"关注降低 AI 引入门槛的基础指南，逐步构建起自己的基础工具箱。"
+			]
+		}
+	];
+
+	let currentQuestionIdx = 0;
+	let userScore = 0;
+
+	// View Elements
+	const startView = document.getElementById('start-view');
+	const quizView = document.getElementById('quiz-view');
+	const resultsView = document.getElementById('results-view');
+	
+	// Buttons
+	const startBtn = document.getElementById('start-btn');
+	const restartBtn = document.getElementById('restart-btn');
+	
+	// Quiz elements
+	const progressBar = document.getElementById('progress-bar');
+	const questionNumber = document.getElementById('question-number');
+	const questionText = document.getElementById('question-text');
+	const optionsContainer = document.getElementById('options-container');
+
+	// Result elements
+	const scoreVal = document.getElementById('score-val');
+	const resultCircle = document.getElementById('result-chart-circle') as SVGCircleElement | null;
+	const profileTitle = document.getElementById('profile-title');
+	const profileDesc = document.getElementById('profile-desc');
+	const recsList = document.getElementById('recommendations-list');
+
+	const showView = (viewId: string) => {
+		[startView, quizView, resultsView].forEach(view => {
+			if (view) view.style.display = 'none';
+		});
+		const targetView = document.getElementById(viewId);
+		if (targetView) {
+			targetView.style.display = 'flex';
+		}
+	};
+
+	const startQuiz = () => {
+		currentQuestionIdx = 0;
+		userScore = 0;
+		showView('quiz-view');
+		renderQuestion();
+	};
+
+	const selectOption = (score: number) => {
+		userScore += score;
+		currentQuestionIdx++;
+		if (currentQuestionIdx < questions.length) {
+			renderQuestion();
+		} else {
+			showResults();
+		}
+	};
+
+	const renderQuestion = () => {
+		const q = questions[currentQuestionIdx];
+		if (!q) return;
+
+		// Update Progress
+		const pct = ((currentQuestionIdx) / questions.length) * 100;
+		if (progressBar) progressBar.style.width = `${pct}%`;
+		if (questionNumber) questionNumber.textContent = `第 ${currentQuestionIdx + 1} 题 / 共 ${questions.length} 题`;
+		if (questionText) questionText.textContent = q.question;
+
+		// Render Options
+		if (optionsContainer) {
+			optionsContainer.innerHTML = '';
+			q.options.forEach((opt, idx) => {
+				const char = String.fromCharCode(65 + idx); // A, B, C...
+				const btn = document.createElement('button');
+				btn.className = 'option-btn';
+				btn.innerHTML = `
+					<div class="option-indicator">${char}</div>
+					<span>${opt.text}</span>
+				`;
+				btn.addEventListener('click', () => selectOption(opt.score));
+				optionsContainer.appendChild(btn);
+			});
+		}
+	};
+
+	const showResults = () => {
+		showView('results-view');
+		
+		// Animate Score Value
+		let currentVal = 0;
+		const duration = 1000; // 1s
+		const step = userScore / (duration / 16);
+		const interval = setInterval(() => {
+			currentVal += step;
+			if (currentVal >= userScore) {
+				currentVal = userScore;
+				clearInterval(interval);
+			}
+			if (scoreVal) scoreVal.textContent = Math.round(currentVal).toString();
+		}, 16);
+
+		// Animate Radial SVG Chart
+		// Circle perimeter is 2 * PI * r = 2 * 3.14159 * 50 = 314
+		const maxOffset = 314;
+		const targetOffset = maxOffset - (maxOffset * (userScore / 100));
+		setTimeout(() => {
+			if (resultCircle) {
+				resultCircle.style.strokeDashoffset = targetOffset.toString();
+			}
+		}, 100);
+
+		// Get Resilience Profile details
+		const profile = profiles.find(p => userScore >= p.minScore) || profiles[profiles.length - 1];
+		if (profileTitle) profileTitle.textContent = profile.title;
+		if (profileDesc) profileDesc.textContent = profile.desc;
+
+		// Populate Recommendations
+		if (recsList) {
+			recsList.innerHTML = '';
+			profile.recommendations.forEach(rec => {
+				const li = document.createElement('li');
+				li.textContent = rec;
+				recsList.appendChild(li);
+			});
+		}
+	};
+
+	// Bind Event Listeners
+	const bindEvents = () => {
+		startBtn?.addEventListener('click', startQuiz);
+		restartBtn?.addEventListener('click', startQuiz);
+	};
+
+	bindEvents();
+
+	// Support page re-loads (Astro swap events)
+	document.addEventListener('astro:after-swap', () => {
+		bindEvents();
+	});
+</script>

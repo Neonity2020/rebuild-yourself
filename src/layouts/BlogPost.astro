@@ -1,0 +1,375 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+
+type Props = CollectionEntry<'blog'>['data'] & {
+	headings?: Array<{ depth: number; slug: string; text: string }>;
+};
+
+const { title, description, pubDate, updatedDate, heroImage, tags, headings = [] } = Astro.props;
+
+// Filter headings for the Table of Contents (show h2 and h3)
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+		<!-- KaTeX for LaTeX formula rendering -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+		<script is:inline src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" defer></script>
+		<script is:inline src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" defer onload="window.dispatchEvent(new Event('katex-loaded'))"></script>
+	</head>
+
+	<body>
+		<Header />
+		
+		<!-- Reading Progress Bar -->
+		<div class="reading-progress-bar" id="reading-progress"></div>
+
+		<main class="post-main">
+			<article class="post-article">
+				<!-- Header Section -->
+				<header class="post-header">
+					<a href="/blog" class="back-link">
+						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="19" y1="12" x2="5" y2="12"></line>
+							<polyline points="12 19 5 12 12 5"></polyline>
+						</svg>
+						Back to Library
+					</a>
+					<div class="post-meta">
+						<span class="post-date"><FormattedDate date={pubDate} /></span>
+						{tags && tags.map(tag => (
+							<span class="tag-badge">#{tag}</span>
+						))}
+					</div>
+					<h1 class="post-title">{title}</h1>
+					<p class="post-lead">{description}</p>
+					{
+						updatedDate && (
+							<div class="last-updated-on">
+								Last updated on <FormattedDate date={updatedDate} />
+							</div>
+						)
+					}
+				</header>
+
+				<!-- Hero Image -->
+				{heroImage && (
+					<div class="hero-image-wrapper glass">
+						<img src={heroImage.src} alt="" class="hero-image" />
+					</div>
+				)}
+
+				<!-- Post Body & Table of Contents Container -->
+				<div class="post-layout-container">
+					<div class="prose" id="post-content">
+						<slot />
+					</div>
+
+					{tocHeadings.length > 0 && (
+						<aside class="toc-sidebar">
+							<div class="toc-card glass">
+								<h4 class="toc-title">On This Page</h4>
+								<nav class="toc-nav">
+									<ul>
+										{tocHeadings.map(h => (
+											<li class={`depth-${h.depth}`}>
+												<a href={`#${h.slug}`} class="toc-link" data-slug={h.slug}>
+													{h.text}
+												</a>
+											</li>
+										))}
+									</ul>
+								</nav>
+							</div>
+						</aside>
+					)}
+				</div>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	/* Reading Progress */
+	.reading-progress-bar {
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 3px;
+		width: 0%;
+		background: var(--accent-gradient);
+		z-index: 999;
+		transition: width 0.1s ease-out;
+		box-shadow: 0 0 8px rgba(var(--accent-cyan-rgb), 0.5);
+	}
+
+	.post-main {
+		width: 1200px;
+		max-width: calc(100% - 2.5rem);
+		margin: 0 auto;
+		padding: 3rem 1.25rem;
+	}
+
+	.post-article {
+		max-width: 960px;
+		margin: 0 auto;
+	}
+
+	/* Post Header */
+	.post-header {
+		margin-bottom: 2.5rem;
+	}
+
+	.back-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: var(--text-secondary);
+		margin-bottom: 1.5rem;
+		transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
+	}
+
+	.back-link:hover {
+		color: var(--accent-cyan);
+		transform: translateX(-4px);
+	}
+
+	.post-meta {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.post-date {
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: var(--text-muted);
+	}
+
+	.tag-badge {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--accent-cyan);
+		text-transform: lowercase;
+	}
+
+	.post-title {
+		font-size: 3.5rem;
+		font-weight: 850;
+		line-height: 1.15;
+		letter-spacing: -0.04em;
+		margin-bottom: 1rem;
+	}
+
+	.post-lead {
+		font-size: 1.25rem;
+		color: var(--text-secondary);
+		line-height: 1.6;
+		margin-bottom: 0;
+	}
+
+	.last-updated-on {
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		font-style: italic;
+		margin-top: 1rem;
+	}
+
+	/* Hero Image */
+	.hero-image-wrapper {
+		border-radius: 24px;
+		overflow: hidden;
+		margin-bottom: 3.5rem;
+		aspect-ratio: 2 / 1;
+		width: 100%;
+	}
+
+	.hero-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	/* Layout Container */
+	.post-layout-container {
+		display: flex;
+		gap: 3.5rem;
+		position: relative;
+		align-items: flex-start;
+	}
+
+	.prose {
+		flex: 1;
+		max-width: 680px;
+	}
+
+	/* TOC Sidebar */
+	.toc-sidebar {
+		width: 250px;
+		flex-shrink: 0;
+		position: sticky;
+		top: 6rem;
+	}
+
+	.toc-card {
+		padding: 1.5rem;
+		border-radius: 20px;
+	}
+
+	.toc-title {
+		font-size: 0.95rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--text-primary);
+		margin-bottom: 1rem;
+		border-bottom: 1px solid var(--border-color);
+		padding-bottom: 0.5rem;
+	}
+
+	.toc-nav ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.toc-nav li {
+		margin-bottom: 0.625rem;
+	}
+
+	.toc-nav li.depth-3 {
+		padding-left: 1rem;
+	}
+
+	.toc-link {
+		font-size: 0.875rem;
+		color: var(--text-secondary);
+		transition: all 0.2s ease;
+		display: inline-block;
+		line-height: 1.4;
+	}
+
+	.toc-link:hover {
+		color: var(--accent-cyan);
+		transform: translateX(2px);
+	}
+
+	.toc-link.active {
+		color: var(--accent-cyan);
+		font-weight: 600;
+		border-left: 2px solid var(--accent-cyan);
+		padding-left: 6px;
+		margin-left: -8px;
+	}
+
+	@media (max-width: 992px) {
+		.toc-sidebar {
+			display: none;
+		}
+		.post-layout-container {
+			gap: 0;
+		}
+		.prose {
+			max-width: 100%;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.post-title {
+			font-size: 2.5rem;
+		}
+		.hero-image-wrapper {
+			margin-bottom: 2rem;
+			border-radius: 16px;
+		}
+	}
+</style>
+
+<script>
+	const setupPostInteractions = () => {
+		// 1. Reading Progress Bar
+		const progressBar = document.getElementById('reading-progress');
+		
+		const updateProgress = () => {
+			if (!progressBar) return;
+			const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+			if (totalHeight > 0) {
+				const percentage = (window.scrollY / totalHeight) * 100;
+				progressBar.style.width = `${percentage}%`;
+			}
+		};
+
+		window.addEventListener('scroll', updateProgress);
+		updateProgress(); // Run once initially
+
+		// 2. Scroll-Spy Table of Contents Active Highlighting
+		const tocLinks = document.querySelectorAll('.toc-link');
+		const articleContent = document.getElementById('post-content');
+		
+		if (!articleContent || tocLinks.length === 0) return;
+
+		// Extract actual heading elements corresponding to slugs
+		const headings = Array.from(articleContent.querySelectorAll('h2, h3'));
+		
+		const observerOptions = {
+			root: null,
+			rootMargin: '-10% 0px -70% 0px', // Trigger when heading is near top of viewport
+			threshold: 0
+		};
+
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					const id = entry.target.getAttribute('id');
+					tocLinks.forEach(link => {
+						const anchorLink = link as HTMLAnchorElement;
+						if (anchorLink.getAttribute('href') === `#${id}`) {
+							link.classList.add('active');
+						} else {
+							link.classList.remove('active');
+						}
+					});
+				}
+			});
+		}, observerOptions);
+
+		// 3. LaTeX Math Rendering
+		const renderLaTeX = () => {
+			const contentElement = document.getElementById('post-content');
+			if (contentElement && typeof renderMathInElement === 'function') {
+				renderMathInElement(contentElement, {
+					delimiters: [
+						{left: '$$', right: '$$', display: true},
+						{left: '$', right: '$', display: false},
+						{left: '\\(', right: '\\)', display: false},
+						{left: '\\[', right: '\\]', display: true}
+					],
+					throwOnError : false
+				});
+			}
+		};
+
+		if (typeof renderMathInElement === 'function') {
+			renderLaTeX();
+		} else {
+			window.addEventListener('katex-loaded', renderLaTeX, { once: true });
+		}
+	};
+
+	// Initialize
+	setupPostInteractions();
+
+	// Support Astro page swaps (transitions)
+	document.addEventListener('astro:after-swap', setupPostInteractions);
+</script>

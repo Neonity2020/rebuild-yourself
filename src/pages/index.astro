@@ -1,0 +1,394 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import InteractiveAssessment from '../components/InteractiveAssessment.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { getCollection } from 'astro:content';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+const posts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`${SITE_TITLE} | Rebuild Yourself`} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<!-- Hero Section -->
+			<section class="hero">
+				<div class="hero-glow hero-glow-cyan"></div>
+				<div class="hero-glow hero-glow-violet"></div>
+				
+				<div class="hero-content">
+					<div class="badge">人机协同 | Human + AI</div>
+					<h1 class="hero-title">如何在 AI 时代 <span class="gradient-text">重塑自我</span></h1>
+					<p class="hero-lead">探索认知增强、智能体工作流与人类独特价值的共生之道，在软件主导的未来中确立自己的核心坐标。</p>
+					
+					<div class="hero-actions">
+						<a href="/blog" class="btn btn-primary">开始阅读</a>
+						<a href="#assessment" class="btn btn-secondary">参与评测</a>
+					</div>
+				</div>
+			</section>
+
+			<!-- Pillars Section -->
+			<section class="pillars">
+				<div class="section-header">
+					<div class="badge">行动路线图 | The Roadmap</div>
+					<h2 class="section-title">三大核心重塑支柱</h2>
+					<p class="section-subtitle">我们专注于在机器智能时代实现个人转型的三大核心支柱。</p>
+				</div>
+
+				<div class="pillars-grid">
+					<div class="pillar-card glass glass-hover">
+						<div class="pillar-icon-wrapper cyan">
+							<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+								<polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+								<line x1="12" y1="22.08" x2="12" y2="12"></line>
+							</svg>
+						</div>
+						<h3>认知增强 (Cognitive Augmentation)</h3>
+						<p class="pillar-desc"><strong>认知增强</strong>: 学习将 AI 视作你的“第二大脑”——借助大语言模型 (LLM) 扩展思维边界，加速问题解决与知识内化。</p>
+					</div>
+
+					<div class="pillar-card glass glass-hover">
+						<div class="pillar-icon-wrapper violet">
+							<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+							</svg>
+						</div>
+						<h3>智能体工作流 (Agentic Workflows)</h3>
+						<p class="pillar-desc"><strong>智能体工作流</strong>: 从单纯的 Prompt 输入转向编排自主运行的循环。利用系统杠杆，彻底重构日常工作与生产力流向。</p>
+					</div>
+
+					<div class="pillar-card glass glass-hover">
+						<div class="pillar-icon-wrapper pink">
+							<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+							</svg>
+						</div>
+						<h3>人本核心韧性 (Human-Core Resilience)</h3>
+						<p class="pillar-desc"><strong>人本韧性</strong>: 专注于批判性思考、深层品味 (Taste)、同理心与判断力——这些是 AI 无法取代的终极人类价值瓶颈。</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Interactive Assessment Section -->
+			<section class="assessment-section" id="assessment">
+				<div class="section-header">
+					<div class="badge">诊断评测工具 | Diagnostic Tool</div>
+					<h2 class="section-title">评估你的 AI 时代准备度</h2>
+					<p class="section-subtitle">评估你在智能体时代 (Agentic Era) 应对变革与重塑自我的能力。</p>
+				</div>
+				<InteractiveAssessment />
+			</section>
+
+			<!-- Latest Insights Section -->
+			<section class="latest-insights">
+				<div class="section-header-row">
+					<div>
+						<div class="badge">最新洞察 | Insights</div>
+						<h2 class="section-title">最新文章</h2>
+					</div>
+					<a href="/blog" class="view-all-link">查看全部文章 &rarr;</a>
+				</div>
+
+				<div class="posts-grid">
+					{posts.map((post) => (
+						<article class="post-card glass glass-hover">
+							{post.data.heroImage && (
+								<div class="post-img-wrapper">
+									<img src={post.data.heroImage.src} alt="" class="post-img" />
+								</div>
+							)}
+							<div class="post-content">
+								<span class="post-date"><FormattedDate date={post.data.pubDate} /></span>
+								<h3 class="post-title">
+									<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+								</h3>
+								<p class="post-desc">{post.data.description}</p>
+								<a href={`/blog/${post.id}/`} class="read-more">阅读全文 &rarr;</a>
+							</div>
+						</article>
+					))}
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	/* Hero Section */
+	.hero {
+		position: relative;
+		padding: 6rem 0 5rem;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		overflow: visible;
+	}
+
+	.hero-glow {
+		position: absolute;
+		width: 350px;
+		height: 350px;
+		border-radius: 50%;
+		filter: blur(100px);
+		opacity: 0.15;
+		z-index: -1;
+		pointer-events: none;
+	}
+	html.light .hero-glow {
+		opacity: 0.08;
+	}
+	.hero-glow-cyan {
+		background: var(--accent-cyan);
+		top: -50px;
+		left: 10%;
+	}
+	.hero-glow-violet {
+		background: var(--accent-violet);
+		bottom: 0;
+		right: 10%;
+	}
+
+	.hero-content {
+		max-width: 800px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.hero-title {
+		font-size: 4rem;
+		font-weight: 850;
+		line-height: 1.1;
+		letter-spacing: -0.04em;
+		margin-top: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.hero-lead {
+		font-size: 1.35rem;
+		color: var(--text-secondary);
+		line-height: 1.6;
+		margin-bottom: 2.5rem;
+		max-width: 650px;
+	}
+
+	.hero-actions {
+		display: flex;
+		gap: 1rem;
+	}
+
+	/* Pillars Section */
+	.pillars {
+		padding: 5rem 0;
+	}
+
+	.section-header {
+		text-align: center;
+		margin-bottom: 3.5rem;
+	}
+
+	.section-title {
+		font-size: 2.5rem;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		margin-top: 0.75rem;
+	}
+
+	.section-subtitle {
+		font-size: 1.15rem;
+		color: var(--text-secondary);
+		max-width: 600px;
+		margin: 0 auto;
+	}
+
+	.pillars-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.5rem;
+	}
+
+	.pillar-card {
+		padding: 2.25rem 2rem;
+		border-radius: 20px;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.pillar-icon-wrapper {
+		width: 3.25rem;
+		height: 3.25rem;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 1.5rem;
+		border: 1px solid rgba(var(--accent-cyan-rgb), 0.2);
+	}
+	.pillar-icon-wrapper.cyan {
+		background: rgba(var(--accent-cyan-rgb), 0.08);
+		color: var(--accent-cyan);
+		border-color: rgba(var(--accent-cyan-rgb), 0.2);
+	}
+	.pillar-icon-wrapper.violet {
+		background: rgba(var(--accent-violet-rgb), 0.08);
+		color: var(--accent-violet);
+		border-color: rgba(var(--accent-violet-rgb), 0.2);
+	}
+	.pillar-icon-wrapper.pink {
+		background: rgba(244, 63, 94, 0.08);
+		color: #f43f5e;
+		border-color: rgba(244, 63, 94, 0.2);
+	}
+
+	.pillar-card h3 {
+		font-size: 1.25rem;
+		margin-bottom: 1rem;
+	}
+
+	.pillar-desc {
+		font-size: 0.95rem;
+		color: var(--text-secondary);
+		margin-bottom: 0;
+		line-height: 1.6;
+	}
+
+	/* Assessment Section */
+	.assessment-section {
+		padding: 4rem 0;
+	}
+
+	/* Latest Insights Section */
+	.latest-insights {
+		padding: 5rem 0 2rem;
+	}
+
+	.section-header-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		margin-bottom: 3.5rem;
+	}
+
+	.view-all-link {
+		font-family: var(--font-display);
+		font-weight: 600;
+		color: var(--accent-cyan);
+		font-size: 0.95rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.posts-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.5rem;
+	}
+
+	.post-card {
+		border-radius: 20px;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	.post-img-wrapper {
+		width: 100%;
+		height: 180px;
+		overflow: hidden;
+		border-bottom: 1px solid var(--border-color);
+	}
+
+	.post-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.5s ease;
+	}
+
+	.post-card:hover .post-img {
+		transform: scale(1.05);
+	}
+
+	.post-content {
+		padding: 1.75rem;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+
+	.post-date {
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		font-weight: 500;
+		margin-bottom: 0.75rem;
+	}
+
+	.post-title {
+		font-size: 1.25rem;
+		margin-bottom: 0.75rem;
+		line-height: 1.35;
+	}
+
+	.post-title a {
+		color: var(--text-primary);
+	}
+	.post-title a:hover {
+		color: var(--accent-cyan);
+	}
+
+	.post-desc {
+		font-size: 0.9rem;
+		color: var(--text-secondary);
+		line-height: 1.5;
+		margin-bottom: 1.5rem;
+		flex: 1;
+	}
+
+	.read-more {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--accent-cyan);
+	}
+
+	@media (max-width: 1024px) {
+		.pillars-grid, .posts-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		.pillars-grid > *:last-child {
+			grid-column: span 2;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.hero-title {
+			font-size: 2.75rem;
+		}
+		.hero-lead {
+			font-size: 1.15rem;
+		}
+		.section-header-row {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1rem;
+		}
+		.pillars-grid, .posts-grid {
+			grid-template-columns: 1fr;
+		}
+		.pillars-grid > *:last-child {
+			grid-column: span 1;
+		}
+	}
+</style>

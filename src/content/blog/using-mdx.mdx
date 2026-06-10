@@ -1,0 +1,45 @@
+---
+title: 'Augmenting Writing with Interactive MDX Components'
+description: 'How to combine Markdown prose with interactive Astro components to build rich, cognitive reading experiences.'
+pubDate: 'Jun 10 2026'
+heroImage: '../../assets/blog-placeholder-5.jpg'
+tags: ['augmentation']
+---
+
+Standard Markdown is excellent for structured, static prose. However, when explaining complex frameworks or systems, static text is often a bottleneck. 
+
+This is where **MDX** shines. MDX allows you to write standard Markdown while importing and rendering live UI components (such as interactive charts, calculators, or sliders) directly in the flow of your writing.
+
+## Why Mix UI Components and Prose?
+
+In the AI era, reading is shifting from passive consumption to active simulation. By embedding interactive components:
+1.  **Simulate Ideas**: Let readers adjust variables (e.g., speed, weight, complexity) in a formula to see outcomes.
+2.  **Self-Check**: Embed inline mini-quizzes or knowledge checks.
+3.  **Real-Time Data**: Fetch and display live API data or local system stats.
+
+## Example: Inline Components
+
+Here is how you import and use a UI component inside of MDX:
+
+```markdown
+import HeaderLink from '../../components/HeaderLink.astro';
+
+<HeaderLink href="/" class="btn btn-secondary">
+	Embedded link component
+</HeaderLink>
+```
+
+Below is the live component rendered inline:
+
+import HeaderLink from '../../components/HeaderLink.astro';
+
+<HeaderLink href="/" style="border: 1px solid var(--accent-cyan); padding: 0.5rem 1rem; border-radius: 8px;">
+	Return Home &larr;
+</HeaderLink>
+
+## Key Guidelines for MDX in Astro
+
+*   **Imports**: Place your component import statements immediately below the frontmatter block.
+*   **Astro Compatibility**: You can import standard `.astro` components as well as React, Vue, or Svelte components.
+*   **Hydration**: Remember that components are rendered as static HTML by default. If you need client-side JS to run, use client directives (e.g., `client:load` or `client:visible`).
+
