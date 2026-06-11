@@ -57,7 +57,7 @@
 
 		<div class="results-actions">
 			<button class="btn btn-secondary" id="restart-btn">重新测试</button>
-			<a href="/blog" class="btn btn-primary">阅读推荐文章</a>
+			<a href="/blog" class="btn btn-primary" id="read-rec-btn">阅读推荐文章</a>
 		</div>
 	</div>
 </div>
@@ -334,6 +334,23 @@
 			transform: translateY(0);
 		}
 	}
+
+	.rec-link {
+		color: var(--accent-cyan);
+		text-decoration: none;
+		font-weight: 600;
+		border-bottom: 1px dashed rgba(var(--accent-cyan-rgb), 0.4);
+		transition: all 0.2s ease;
+	}
+
+	.rec-link:hover {
+		color: var(--text-primary);
+		border-bottom-color: var(--accent-cyan);
+		background: rgba(var(--accent-cyan-rgb), 0.08);
+		border-radius: 4px;
+		padding: 0 4px;
+		margin: 0 -4px;
+	}
 </style>
 
 <script>
@@ -378,7 +395,8 @@
 			title: "AI Orchestrator (AI 协同架构师)",
 			desc: "你处于 AI 适应度的第一梯队。你将 AI 视为认知放大器，在保持高度批判性思考的同时成倍提升效率。你已经具备了在 AI 时代蓬勃发展并发挥领导力的坐标。",
 			recommendations: [
-				"阅读文章：《Designing Systems of Intelligence: Beyond Simple Chat Bots》",
+				"推荐阅读深度博客：<a href='/blog/systems-of-intelligence/' class='rec-link'>《Designing Systems of Intelligence: 超越聊天框，构建系统级智能》</a>",
+				"推荐阅读核心原理：<a href='/blog/agent-harness-context/' class='rec-link'>《Agent = LLM + Harness：为什么上下文管理是智能体的灵魂？》</a>",
 				"专注于构建个人专属的工作流，并尝试编排自主运行的智能体（Agents）。",
 				"持续磨练你的深度品味 (Taste) 与直觉判断力——这是人类最后的价值壁垒。"
 			]
@@ -388,7 +406,7 @@
 			title: "Resilient Adapter (敏捷适应者)",
 			desc: "你正在积极地探索和适应。你利用 AI 提高了工作速度，但可能仍然处于较为被动的提问状态，或者缺乏系统性的工作流编排。优化你的 Prompt 架构将为你带来巨大的生产力红利。",
 			recommendations: [
-				"阅读文章：《Accelerating Your Learning Velocity with AI Coaches》",
+				"推荐阅读：<a href='/blog/learning-velocity/' class='rec-link'>《Accelerating Your Learning Velocity: 用 AI 教练开启超速学习时代》</a>",
 				"挑战自己：利用 AI 在几天内用一门你完全不懂的编程语言独立完成一个 Side Project。",
 				"建立日常惯例，主动测试和引入新的生产力工具。"
 			]
@@ -398,7 +416,7 @@
 			title: "Traditional Humanist (传统探索者)",
 			desc: "你目前仍在使用传统的方法开展工作。虽然你对人类核心价值的专注非常宝贵，但你也面临在执行速度和处理复杂任务能力上被拉开差距的风险。建议从在日常例程中融入微小的 AI 协同习惯开始。",
 			recommendations: [
-				"阅读文章：《A Beginner's Manifesto for Rebuilding Yourself in the AI Era》",
+				"推荐阅读：<a href='/blog/beginners-manifesto/' class='rec-link'>《A Beginner's Manifesto: AI 时代个人重塑宣言》</a>",
 				"从小事做起：每天花 10 分钟使用 AI 辅助润色邮件、翻译文档或提取长文摘要。",
 				"关注降低 AI 引入门槛的基础指南，逐步构建起自己的基础工具箱。"
 			]
@@ -520,9 +538,21 @@
 			recsList.innerHTML = '';
 			profile.recommendations.forEach(rec => {
 				const li = document.createElement('li');
-				li.textContent = rec;
+				li.innerHTML = rec;
 				recsList.appendChild(li);
 			});
+		}
+
+		// Update recommended article link dynamically
+		const readRecBtn = document.getElementById('read-rec-btn') as HTMLAnchorElement | null;
+		if (readRecBtn) {
+			if (userScore >= 80) {
+				readRecBtn.href = '/blog/systems-of-intelligence/';
+			} else if (userScore >= 50) {
+				readRecBtn.href = '/blog/learning-velocity/';
+			} else {
+				readRecBtn.href = '/blog/beginners-manifesto/';
+			}
 		}
 	};
 
